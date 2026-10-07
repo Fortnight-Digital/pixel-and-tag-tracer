@@ -207,8 +207,17 @@ directly, one after another, and reports what was recorded on each.
 - `tests/run.js` holds the tests. The vendor cases are real requests captured from live sites.
 
 To package a build: `npx web-ext build --ignore-files tests docs "tests/**" "docs/**"`.
-Bump `version` in `manifest.json` for each release, and keep the add-on `id`
-as it is so installs update in place.
+Keep the add-on `id` as it is so installs update in place.
+
+### Releasing
+
+Every push to `main` runs the tests and Mozilla's linter in GitHub Actions
+(`.github/workflows/firefox-addons.yml`). To release, bump `version` in
+`manifest.json`, add a `## <version>` section to `CHANGELOG.md` (it becomes the
+release notes on Firefox Add-ons), and push to `main`. The workflow submits the
+new version to Firefox Add-ons for review, sends the listing text from
+`docs/amo-metadata.json`, and tags the version here. A push that doesn't change
+the version submits nothing.
 
 ## Feedback and bugs
 

@@ -1,0 +1,107 @@
+# Every push to main runs the tests and Mozilla's linter. A push that changes
+# the version in manifest.json also submits that version to Firefox Add-ons
+# (addons.mozilla.org) on the listed channel: it joins Mozilla's review queue
+# and goes on the public listing once approved. The listing text comes from
+# docs/amo-metadata.json and the release notes from that version's section of
+# CHANGELOG.md. Each submitted version is then tagged here, so it's never sent
+# twice.
+#
+# Needs two repository secrets, from addons.mozilla.org/developers/addon/api/key/:
+# AMO_API_KEY (the JWT issuer) and AMO_API_SECRET (the JWT secret).
+#
+# Run it by hand (Actions → Firefox Add-ons → Run workflow) to submit the
+# current version if it hasn't been tagged yet, e.g. to retry a failed submission.
+
+name: Firefox Add-ons
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: firefox-addons
+  cancel-in-progress: false
+
+env:
+  WEB_EXT: web-ext@10.7.0
+
+jobs:
+  test-and-submit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Unit tests
+        run: node tests/run.js
+
+      - name: Mozilla's linter
+        run: npx --yes "$WEB_EXT" lint --ignore-files tests docs "tests/**" "docs/**" --warnings-as-errors
+
+      - name: Decide whether to submit
+        id: decide
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          version=$(jq -r .version manifest.json)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          if git rev-parse -q --verify "refs/tags/v$version" >/dev/null; then
+            echo "submit=false" >> "$GITHUB_OUTPUT"
+            echo "Version $version is already tagged v$version, so it was submitted before. Nothing to send." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            submit=true
+          else
+            old=$(git show "$BEFORE:manifest.json" 2>/dev/null | jq -r .version 2>/dev/null) || true
+            if [ "$old" != "$version" ]; then submit=true; else submit=false; fi
+          fi
+          echo "submit=$submit" >> "$GITHUB_OUTPUT"
+          if [ "$submit" = false ]; then
+            echo "Version unchanged ($version), so nothing was sent to Firefox Add-ons. Bump \`version\` in manifest.json to release." | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Release notes from CHANGELOG.md
+        if: steps.decide.outputs.submit == 'true'
+        env:
+          VERSION: ${{ steps.decide.outputs.version }}
+        run: |
+          awk -v h="## $VERSION" '$0 == h || index( $0, h " " ) == 1 { f = 1; next } /^## / { f = 0 } f' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          if ! grep -q '[^[:space:]]' "$RUNNER_TEMP/notes.md"; then
+            echo "::error file=CHANGELOG.md::Add a '## $VERSION' section to CHANGELOG.md. It becomes this version's release notes on Firefox Add-ons."
+            exit 1
+          fi
+          jq --rawfile n "$RUNNER_TEMP/notes.md" '.version.release_notes = { "en-US": ( $n | gsub( "^\\s+|\\s+$"; "" ) ) }' \
+            docs/amo-metadata.json > "$RUNNER_TEMP/amo-metadata.json"
+
+      - name: Submit to Firefox Add-ons
+        if: steps.decide.outputs.submit == 'true'
+        env:
+          WEB_EXT_API_KEY: ${{ secrets.AMO_API_KEY }}
+          WEB_EXT_API_SECRET: ${{ secrets.AMO_API_SECRET }}
+        run: |
+          if [ -z "$WEB_EXT_API_KEY" ] || [ -z "$WEB_EXT_API_SECRET" ]; then
+            echo "::error::Add the AMO_API_KEY and AMO_API_SECRET repository secrets (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          npx --yes "$WEB_EXT" sign --channel=listed --amo-metadata "$RUNNER_TEMP/amo-metadata.json" \
+            --ignore-files tests docs "tests/**" "docs/**" --approval-timeout 0
+
+      - name: Tag the version
+        if: steps.decide.outputs.submit == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.decide.outputs.version }}
+        run: |
+          printf '\n\nSubmitted to Firefox Add-ons; it goes live there once Mozilla approves it.\n' >> "$RUNNER_TEMP/notes.md"
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --title "Pixel & Tag Tracer $VERSION" --notes-file "$RUNNER_TEMP/notes.md"
+          echo "Submitted $VERSION to Firefox Add-ons for review, and tagged it v$VERSION." >> "$GITHUB_STEP_SUMMARY"
