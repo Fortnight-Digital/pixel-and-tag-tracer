@@ -1,0 +1,9 @@
+{
+  "name": "pixel-tag-tracer-firefox-tests",
+  "private": true,
+  "type": "module",
+  "description": "Real-Firefox checks, run on a made-up shop behind a local proxy.",
+  "dependencies": {
+    "puppeteer-core": "^25.12.0"
+  }
+}

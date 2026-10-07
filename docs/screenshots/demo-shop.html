@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Trailhead 2P Tent | Northwind Outdoors</title>
+<script>
+// A made-up shop wired the way a typical GTM setup is. Every request below
+// goes to a local proxy; none leaves the machine.
+window.dataLayer = window.dataLayer || [];
+function gtag() { dataLayer.push( arguments ); }
+gtag( 'consent', 'default', { ad_storage: 'denied', analytics_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 } );
+dataLayer.push( { event: 'gtm.js', 'gtm.start': Date.now() } );
+
+// What gtag would hold internally (the extension reads this for live consent).
+window.google_tag_manager = { 'GTM-NW4DEMO': {}, 'G-NW7DEMO42': {}, 'AW-987654321': {} };
+window.google_tag_data = { ics: { entries: {
+	ad_storage: { default: false }, analytics_storage: { default: false },
+	ad_user_data: { default: false }, ad_personalization: { default: false },
+} } };
+
+const page = encodeURIComponent( location.href );
+const title = encodeURIComponent( document.title );
+const img = url => { new Image().src = url; };
+const post = ( url, body ) => fetch( url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify( body ) } ).catch( () => {} );
+const ga4 = ( en, consent, extra ) => img( 'http://region1.google-analytics.com/g/collect?v=2&tid=G-NW7DEMO42&gtm=45je6a10v9876543z8&_p=1791300000000&' + consent + '&cid=1385526151.1791300000&sid=1791300000&sct=1&seg=1&dl=' + page + '&dt=' + title + '&en=' + en + ( extra || '' ) );
+const DENIED = 'gcs=G100&gcd=13p3p3p3p5l1', GRANTED = 'gcs=G111&gcd=13r3r3r3r5l1';
+
+setTimeout( () => ga4( 'page_view', DENIED, '&_fv=1&_ss=1' ), 300 );
+// A tag that ignores consent: the Meta pixel fires before the visitor has chosen.
+setTimeout( () => img( 'http://www.facebook.com/tr/?id=1234567890123456&ev=PageView&dl=' + page + '&a=tmgoogletagmanager&v=2.9.170&r=stable&ec=0&o=4126' ), 380 );
+setTimeout( () => dataLayer.push( { event: 'gtm.dom' } ), 600 );
+
+// The visitor accepts the cookie banner.
+setTimeout( () => {
+	for ( const k of Object.keys( google_tag_data.ics.entries ) ) google_tag_data.ics.entries[ k ].update = true;
+	gtag( 'consent', 'update', { ad_storage: 'granted', analytics_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' } );
+	dataLayer.push( { event: 'cookie_consent_update', consent_categories: 'necessary,analytics,marketing' } );
+}, 1300 );
+setTimeout( () => {
+	post( 'http://analytics.tiktok.com/api/v2/pixel', { event: 'Pageview', event_id: 'pv-1', context: { pixel: { code: 'CNW4DEMO8T1K7Q2X0B9G' }, page: { url: location.href }, user: { anonymous_id: 'a1b2c3' } }, properties: {} } );
+	img( 'http://px.ads.linkedin.com/collect?v=2&fmt=js&pid=4567890&time=1791300001400&url=' + page + '&tm=gtmv2' );
+	img( 'http://ct.pinterest.com/v3/?tid=2619876543210&event=pagevisit&pd=%7B%22np%22%3A%22gtm%22%7D&ad=%7B%22loc%22%3A%22' + page + '%22%7D' );
+	post( 'http://www.clarity.ms/eus2-c/collect', { e: [ 'recording' ] } );
+}, 1450 );
+
+// Add to cart: GTM turns one dataLayer event into five tools' events.
+setTimeout( () => {
+	dataLayer.push( { ecommerce: null } );
+	dataLayer.push( { event: 'add_to_cart', ecommerce: { currency: 'USD', value: 289, items: [ { item_id: 'TH-2P-SAGE', item_name: 'Trailhead 2P Tent', item_variant: 'Sage', price: 289, quantity: 1 } ] } } );
+}, 2300 );
+setTimeout( () => {
+	ga4( 'add_to_cart', GRANTED, '&cu=USD&epn.value=289&pr1=idTH-2P-SAGE~nmTrailhead%202P%20Tent~vaSage~pr289~qt1' );
+	img( 'http://www.facebook.com/tr/?id=1234567890123456&ev=AddToCart&dl=' + page + '&a=tmgoogletagmanager&cd[content_ids]=%5B%22TH-2P-SAGE%22%5D&cd[content_type]=product&cd[value]=289&cd[currency]=USD' );
+	post( 'http://analytics.tiktok.com/api/v2/pixel', { event: 'AddToCart', event_id: 'atc-1', context: { pixel: { code: 'CNW4DEMO8T1K7Q2X0B9G' }, page: { url: location.href }, user: { anonymous_id: 'a1b2c3' } }, properties: { content_id: 'TH-2P-SAGE', value: 289, currency: 'USD' } } );
+	post( 'http://api.segment.io/v1/t', { type: 'track', event: 'Product Added', properties: { product_id: 'TH-2P-SAGE', name: 'Trailhead 2P Tent', price: 289, quantity: 1 }, anonymousId: 'f3c1d2', writeKey: 'nwDemoWriteKey8Q2' } );
+	img( 'http://googleads.g.doubleclick.net/pagead/viewthroughconversion/987654321/?random=1791300002&cv=11&fst=1791300002&guid=ON&async=1&en=add_to_cart&gtm=45be6a10v9876543&' + GRANTED + '&value=289&currency_code=USD&url=' + page );
+}, 2340 );
+setTimeout( () => dataLayer.push( { event: 'gtm.load' } ), 2900 );
+</script>
+</head>
+<body style="font: 16px system-ui; padding: 40px">
+<h1>Trailhead 2P Tent</h1>
+<p>Northwind Outdoors: a demo shop for screenshots.</p>
+</body>
+</html>

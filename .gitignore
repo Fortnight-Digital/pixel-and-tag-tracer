@@ -1,0 +1,5 @@
+web-ext-artifacts/
+.DS_Store
+.amo-upload-uuid
+tests/firefox/node_modules/
+tests/firefox/package-lock.json

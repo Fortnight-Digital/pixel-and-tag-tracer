@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel &amp; Tag Tracer</title>
+<link rel="stylesheet" href="panel.css">
+</head>
+<body>
+<header>
+	<div class="top">
+		<strong class="brand"><img src="icon.svg" alt="" width="18" height="18"> Pixel &amp; Tag Tracer</strong>
+		<span class="host" id="host"></span>
+		<span class="actions">
+			<button type="button" id="sidebar" title="Keep it open beside the page">Sidebar</button>
+			<button type="button" id="lock" aria-pressed="false" title="Keep showing this tab while you use other tabs">Lock to this tab</button>
+			<button type="button" id="copy" title="Copy the log as plain text">Copy log</button>
+			<button type="button" id="clear" title="Clear this tab's log">Clear</button>
+		</span>
+	</div>
+	<div class="counts" id="counts"></div>
+	<div class="now" id="now"></div>
+	<div class="filters">
+		<label class="toggle"><input type="checkbox" id="dl"> dataLayer events</label>
+		<label class="toggle"><input type="checkbox" id="extras"> Scripts &amp; side-pings</label>
+	</div>
+	<div class="vendors" id="vendors" role="group" aria-label="Filter by tool">
+	</div>
+</header>
+<main id="list" aria-live="polite"></main>
+<script src="rules.js"></script>
+<script src="vendors.js"></script>
+<script src="panel.js"></script>
+</body>
+</html>

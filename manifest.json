@@ -1,0 +1,32 @@
+{
+	"manifest_version": 2,
+	"name": "Pixel & Tag Tracer",
+	"version": "0.8.1",
+	"description": "Shows every tracking hit a page sends (Google, Meta, Segment and 54 more ad, analytics, replay and marketing tools): event, IDs, parameters, the consent state it fired under, and the GTM dataLayer events around it.",
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{348b2138-c334-473a-a88c-d63ab62caa60}",
+			"strict_min_version": "140.0",
+			"data_collection_permissions": { "required": [ "none" ] }
+		},
+		"gecko_android": { "strict_min_version": "142.0" }
+	},
+	"permissions": [ "webRequest", "webNavigation", "<all_urls>" ],
+	"background": { "scripts": [ "rules.js", "vendors.js", "background.js" ] },
+	"content_scripts": [
+		{ "matches": [ "<all_urls>" ], "js": [ "content.js" ], "run_at": "document_start", "all_frames": false }
+	],
+	"browser_action": {
+		"default_title": "Pixel & Tag Tracer",
+		"default_popup": "panel.html",
+		"default_icon": "icon.svg"
+	},
+	"devtools_page": "devtools.html",
+	"sidebar_action": {
+		"default_title": "Pixel & Tag Tracer",
+		"default_panel": "panel.html?view=sidebar",
+		"default_icon": "icon.svg",
+		"open_at_install": false
+	},
+	"icons": { "48": "icon.svg", "96": "icon.svg" }
+}

@@ -1,0 +1,32 @@
+{
+  "name": {
+    "en-US": "Pixel & Tag Tracer"
+  },
+  "summary": {
+    "en-US": "See every tracking pixel and tag a page fires (Google, Meta, TikTok, LinkedIn, Segment and 50+ more), with decoded events, IDs, consent state and the GTM dataLayer events behind them. Nothing leaves your browser."
+  },
+  "description": {
+    "en-US": "Pixel & Tag Tracer shows every request a page sends to 57 ad, analytics, session-replay and marketing tools, including Google, Meta, TikTok, LinkedIn and Segment: the event, the IDs, every parameter, the consent state and the GTM events behind it.\n\nWHAT IT SHOWS\n- Every hit, in order: tool, event name, pixel or account ID, and response status, so a pixel blocked by tracking protection or another extension doesn't go missing silently.\n- Click any hit for every parameter with a plain-English label, plus the raw URL.\n- Click any ID (GTM-…, G-…, pixel IDs) or any table cell to copy it. Copy table copies a whole table, ready to paste into a spreadsheet.\n- Google Consent Mode decoded on each Google hit: ads, analytics, user data and personalisation, and how each was set (e.g. \"denied by default, granted by update\").\n- Consent-leak flags: a hit from any other tool that fires while the page's consent says no is marked red, and so is the toolbar badge.\n- Audit notes: hashed or unhashed personal data, IP-to-company lookups, form capture, session recordings, and tracking routed through the site's own domain.\n\nGTM DEBUGGING\n- Every dataLayer push and gtag() call in the same timeline: GTM's built-in events (Container Loaded, DOM Ready, Click, Form Submit and so on), custom events, and consent default/update calls, including region-scoped defaults.\n- Pixels installed by Google Tag Manager are labelled \"via GTM\".\n- dataLayer snapshots, like Tag Assistant's Data Layer tab: the merged dataLayer after any push, and at the moment any hit fired.\n- The GTM containers and Google tag IDs live on the page are listed at the top.\n\nTOOLS COVERED\nGoogle (GA4, Google Ads, Floodlight, GTM, server-side GTM and tag gateways), Meta, Segment, TikTok, LinkedIn, Microsoft Ads, Pinterest, Snapchat, X, Reddit, Quora, Spotify, Amazon Ads, Criteo, The Trade Desk, StackAdapt, AdRoll, RTB House, AppLovin, Taboola, Outbrain, Xandr, Quantcast, Adobe Advertising, Adobe Analytics, Amplitude, Mixpanel, Heap, PostHog, Matomo, Plausible, Fathom, Comscore, Hotjar, Microsoft Clarity, FullStory, Contentsquare, Quantum Metric, Mouseflow, Crazy Egg, RudderStack, mParticle, Tealium, HubSpot, Marketo, Marketo Measure, Pardot, Klaviyo, Attentive, Impact, Northbeam, Customer.io, 6sense, Demandbase, ZoomInfo, Clearbit and G2.\n\nHOW TO USE IT\n- Toolbar popup for the current tab; the badge counts the page's hits.\n- A sidebar that stays open while you click around and follows whichever tab you're on, or locks to one tab while you work in others (say, the client site while you're in GTM): the view for testing a cookie banner.\n- A \"Tag Tracer\" panel in DevTools, there only on the tabs you open it on: dock it to the right for a per-tab sidebar.\n- Filter chips for each tool on the page, a toggle for scripts and side-requests, and Copy log, which puts the timeline on the clipboard as plain text.\n\nPRIVACY\nPixel & Tag Tracer sends nothing anywhere: no analytics, no accounts, no requests of its own. Everything stays in your browser, held in memory, and clears when Firefox closes. It doesn't block or alter any request.\n\nLIMITS\nIt sees what the browser sends. Server-side tracking (Meta Conversions API, GA4 Measurement Protocol, Segment server sources) never passes through the browser. GTM tag names aren't included in published containers; use GTM's Preview mode for those.\n\nNot affiliated with Google, Meta or any of the vendors listed. Their names are used only to say which tools it recognises."
+  },
+  "categories": {
+    "firefox": [
+      "web-development",
+      "privacy-security"
+    ]
+  },
+  "tags": [
+    "privacy",
+    "google",
+    "facebook"
+  ],
+  "version": {
+    "license": "MIT",
+    "compatibility": [
+      "firefox"
+    ],
+    "approval_notes": "Pixel & Tag Tracer is a read-only inspector for marketers and developers. It\nmakes no network requests, collects no data (`data_collection_permissions:\nnone`), loads no remote code, and ships unminified, unbundled source. The\n`tests/` and `docs/` folders are excluded from the package.\n\nWhy each permission:\n- `webRequest` (non-blocking, with `requestBody`): observes tracking requests\n  to known vendor hosts to decode them. It never blocks or modifies a request.\n  One extra non-blocking listener on `<all_urls>`, without request bodies, looks\n  only for Google tag parameters (`tid=` / `gtm=`) to spot Google tags served\n  from a site's own domain.\n- `webNavigation`: marks page loads in the timeline.\n- `devtools_page`: adds a \"Tag Tracer\" DevTools panel showing the same log as\n  the popup, for the inspected tab only.\n- `<all_urls>`: tracking fires on every site, so observing it, and reading the\n  page's consent state, needs host access everywhere.\n\nPage access:\n- `content.js` (declared content script, top frame only) reads the page's\n  `dataLayer` through `wrappedJSObject` to show Google Tag Manager events. It\n  wraps `dataLayer.push` with `exportFunction` only to timestamp each push, and\n  calls the original via `Reflect.apply` with the arguments unchanged.\n- `probe.js` is injected on demand with `tabs.executeScript({ file })`. It\n  reads, without writing, Google's consent state (`google_tag_data.ics`), the\n  loaded GTM container IDs, a consent cookie and `navigator.globalPrivacyControl`.\n\nAll data stays in the background page's memory and is shown only in the\nextension's own popup and sidebar.",
+    "release_notes": {
+      "en-US": "First public release: tracking hits from 57 tools with decoded events, IDs, parameters and consent state; GTM dataLayer events and snapshots; click to copy any ID or table cell."
+    }
+  }
+}
