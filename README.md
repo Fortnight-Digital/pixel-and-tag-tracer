@@ -101,7 +101,7 @@ tracking protection or another extension is visible instead of silently missing.
 
 ## Install
 
-Install **Pixel & Tag Tracer** from Firefox Add-ons (addons.mozilla.org).
+Install **Pixel & Tag Tracer** from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/pixel-tag-tracer/).
 It needs Firefox 140 or later.
 
 ## Use
